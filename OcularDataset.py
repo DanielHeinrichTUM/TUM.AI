@@ -7,6 +7,8 @@ import os
 
 class OcularDataset(Dataset):
     def __init__(self, df, image_dir, transform=None):
+        if df is None:
+            raise ValueError("DataFrame (df) cannot be None!")
         self.df = df
         self.image_dir = image_dir
         self.transform = transform or transforms.Compose([
