@@ -18,6 +18,7 @@ class OcularDataset(Dataset):
                                 std=[0.229, 0.224, 0.225])
         ])
         self.sex_mapping = {"Male": 0, "Female": 1}
+        self.age_mean, self.age_std = df["Patient Age"].mean(), df["Patient Age"].std()
 
     def __len__(self):
         return len(self.df)
@@ -30,11 +31,12 @@ class OcularDataset(Dataset):
         
         labels = row[["N","D","G","C","A","H","M","O"]].values.astype(float)
         sex = self.sex_mapping.get(row["Patient Sex"], 0) #defaulting to male if unknown, just like in real medical research
+        age = (row["Patient Age"] - self.age_mean) / self.age_std
         
         return {
             "images": torch.stack([left_img, right_img]),
             "labels": torch.FloatTensor(labels),
-            "sex": torch.tensor(sex),
+            "sex_age": torch.FloatTensor([sex, age]),
             "id": row["ID"]
         }
     
